@@ -20,12 +20,16 @@ public class AnimationStateController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float MoveX = Input.GetAxis("Horizontal") / 2;
+        float MoveY = Input.GetAxis("Vertical") / 2;
+        animator.SetFloat("MoveX", MoveX);
+        animator.SetFloat("MoveY", MoveY);
         bool isWalking = animator.GetBool(isWalkingHash);
         bool isRunning = animator.GetBool(isRunningHash);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
         bool forwardPressed = Input.GetKey("w");
         
-
+        //
 
         //Accel + Decel
         if (forwardPressed && Velocity < 1.0f)
