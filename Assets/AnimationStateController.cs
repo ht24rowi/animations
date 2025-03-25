@@ -2,16 +2,19 @@ using UnityEngine;
 public class AnimationStateController : MonoBehaviour
 {
     Animator animator;
+    float Velocity = 0.0f;
+    public float acceleration = 0.1f;
+    public float decelation = 0.5f;
     int isWalkingHash;
     int isRunningHash;
-    int isJumpingHash;
+    int VelocityHash;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
+    { 
         animator = GetComponent<Animator>();
-        isJumpingHash = Animator.StringToHash("isJumping");
         isWalkingHash = Animator.StringToHash("isWalking");
         isRunningHash = Animator.StringToHash("isRunning");
+        VelocityHash = Animator.StringToHash("Velocity");
     }
 
     // Update is called once per frame
@@ -19,14 +22,26 @@ public class AnimationStateController : MonoBehaviour
     {
         bool isWalking = animator.GetBool(isWalkingHash);
         bool isRunning = animator.GetBool(isRunningHash);
-        bool isJumping = animator.GetBool(isJumpingHash);
         bool runPressed = Input.GetKey(KeyCode.LeftShift);
         bool forwardPressed = Input.GetKey("w");
-        bool jumpPressed = Input.GetKey("d");
         
 
 
-        //movement logic
+        //Accel + Decel
+        if (forwardPressed && Velocity < 1.0f)
+        {
+            Velocity += Time.deltaTime * acceleration;
+        }
+        
+        if (!forwardPressed && Velocity > 0.0f)
+        {
+            Velocity -= Time.deltaTime * decelation;
+        }
+        if  (!forwardPressed && Velocity < 0.0f)
+        {
+            Velocity = 0.0f;
+        }
+        animator.SetFloat(VelocityHash, Velocity);
 
         //walking
         if (!isWalking && forwardPressed)
@@ -37,7 +52,7 @@ public class AnimationStateController : MonoBehaviour
         {
             animator.SetBool(isWalkingHash, false);
         }
-
+        
         //Running
         if (!isRunning && (runPressed && forwardPressed))
         {
@@ -46,12 +61,6 @@ public class AnimationStateController : MonoBehaviour
         if (isRunning && (!runPressed || !forwardPressed))
         {
             animator.SetBool(isRunningHash, false);
-        }
-        
-        //jumping
-        if (jumpPressed && isRunning)
-        {
-            animator.SetTrigger(isJumpingHash);
         }
 
     }
